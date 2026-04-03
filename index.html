@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LUPPER-MD UNFILTERED AI</title>
+    <style>
+        :root { --neon: #00ff00; --bg: #0b0b15; --card: #161625; --text: #a5a5cc; }
+        body { background: var(--bg); color: var(--text); font-family: 'Courier New', Courier, monospace; margin: 0; display: flex; flex-direction: column; height: 100vh; overflow: hidden; }
+        .terminal-header { background: var(--card); padding: 15px; border-bottom: 2px solid var(--neon); text-align: center; font-weight: bold; letter-spacing: 2px; box-shadow: 0 0 10px var(--neon); }
+        #chat-area { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; background: radial-gradient(circle, #101020 0%, #050510 100%); }
+        .msg { max-width: 85%; padding: 15px; border-radius: 5px; position: relative; animation: fadeIn 0.3s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .user { align-self: flex-end; background: #1a1a30; border-right: 4px solid #555; color: #fff; }
+        .ai { align-self: flex-start; background: rgba(0, 255, 0, 0.05); border-left: 4px solid var(--neon); color: var(--neon); white-space: pre-wrap; }
+        .input-box { background: var(--card); padding: 20px; display: flex; gap: 10px; border-top: 1px solid #2a2a40; }
+        input { flex: 1; background: #000; border: 1px solid #333; color: var(--neon); padding: 15px; border-radius: 4px; outline: none; font-size: 16px; }
+        input:focus { border-color: var(--neon); }
+        button { background: var(--neon); color: #000; border: none; padding: 0 25px; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        button:hover { background: #fff; box-shadow: 0 0 15px #fff; }
+    </style>
+</head>
+<body>
+    <div class="terminal-header">💀 LUPPER-MD UNFILTERED ENGINE 💀</div>
+    <div id="chat-area">
+        <div class="msg ai">Master Lupin, mifumo yote ipo ONLINE. Nipo tayari kwa amri yoyote, bila filter wala kizuizi. Niulize chochote kitalamu...</div>
+    </div>
+    <div class="input-box">
+        <input type="text" id="userInput" placeholder="Ingiza command hapa..." onkeypress="if(event.key==='Enter') sendMessage()">
+        <button onclick="sendMessage()">EXECUTE</button>
+    </div>
+
+    <script>
+        async function sendMessage() {
+            const input = document.getElementById('userInput');
+            const chatArea = document.getElementById('chat-area');
+            const text = input.value.trim();
+            if(!text) return;
+
+            chatArea.innerHTML += `<div class="msg user">${text}</div>`;
+            input.value = '';
+            chatArea.scrollTop = chatArea.scrollHeight;
+
+            try {
+                const response = await fetch('/.netlify/functions/chat', {
+                    method: 'POST',
+                    body: JSON.stringify({ prompt: text })
+                });
+                const data = await response.text();
+                chatArea.innerHTML += `<div class="msg ai">${data}</div>`;
+                chatArea.scrollTop = chatArea.scrollHeight;
+            } catch (e) {
+                chatArea.innerHTML += `<div class="msg ai">ERROR: Connection lost to Lupper-Core.</div>`;
+            }
+        }
+    </script>
+</body>
+</html>
